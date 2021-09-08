@@ -34,7 +34,7 @@ describe("Routes Test Suite", () => {
         ...defaultParams,
       };
       params.request.method = "inexistent";
-      await routes.handler(...params.values());
+      routes.handler(...params.values());
       expect(params.response.end).toHaveBeenCalledWith("hello world");
     });
     test("it should set any request with CORS enabled", async () => {
@@ -43,7 +43,7 @@ describe("Routes Test Suite", () => {
         ...defaultParams,
       };
       params.request.method = "inexistent";
-      await routes.handler(...params.values());
+      routes.handler(...params.values());
       expect(params.response.setHeader).toHaveBeenCalledWith(
         "Access-Control-Allow-origin",
         "*"
@@ -55,7 +55,7 @@ describe("Routes Test Suite", () => {
         ...defaultParams,
       };
       params.request.method = "OPTIONS";
-      await routes.handler(...params.values());
+      routes.handler(...params.values());
       expect(params.response.writeHead).toHaveBeenCalledWith(204);
       expect(params.response.end).toHaveBeenCalledWith("Ola mundo");
     });
@@ -65,17 +65,22 @@ describe("Routes Test Suite", () => {
         ...defaultParams,
       };
       params.request.method = "GET";
-      await routes.handler(...params.values());
-      expect(params.response.end).toHaveBeenCalledWith("hola mundo");
+      jest.spyOn(routes, routes.get.name).mockResolvedValue();
+      routes.handler(...params.values());
+      expect(routes.get).toHaveBeenCalled();
     });
-    test("give method POST it should chose post async route", () => {
+    test("give method POST it should chose post async route", async () => {
       const routes = new Routes();
       const params = {
         ...defaultParams,
       };
       params.request.method = "POST";
-      await routes.handler(...params.values());
-      expect(params.response.end).toHaveBeenCalledWith("hello world");
+      jest.spyOn(routes, routes.post.name).mockResolvedValue();
+      routes.handler(...params.values());
+      expect(routes.post).toHaveBeenCalled();
     });
+  });
+  describe("#get", () => {
+    test.todo("given method GET it should list all files downloaded");
   });
 });
